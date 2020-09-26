@@ -1,2 +1,2 @@
 # OpenCV
-This repository contains all my OpenCV projects. All the code and material published in this repository meant for learning purposes.
+This repository contains all my OpenCV projects. All the published code and material in this repository is meant for learning purposes only.

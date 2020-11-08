@@ -1,0 +1,92 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Sep 25 12:35:59 2020
+
+@author: khan
+"""
+
+#Import opencv an numpy
+import cv2 as cv
+import numpy as np
+# Creating a function that return nothing
+def nothing(x):
+    pass
+# Create a black image, a window
+img = np.zeros((300,512,3), np.uint8)
+cv.namedWindow('image')
+# Create trackbars to change and experiment different values of threshold and arcLength
+cv.createTrackbar('alpha','image',1,100,nothing)
+cv.createTrackbar('thresh_num','image',0,255,nothing)
+#Creating a dictionary of polygon shapes
+polygon_shape = { 
+        3: "Triangle", 
+        4: "Quadrilateral", 
+        5: "Pentagon",
+        6: "Hexagon",
+        7: "Heptagon",
+        8: "Octagon",
+        9: "Nonagon",
+        10: "Decagon"
+    }
+#Create a list varaible for contours
+list_contours = []
+#Define and initialize the video stream variable cap
+cap = cv.VideoCapture(1)
+#Start a loop to compute input stream and display the output
+while(True):
+    #Declaring trackbar variables
+    thresh_num = cv.getTrackbarPos('thresh_num','image')
+    alpha = cv.getTrackbarPos('alpha','image')
+    #reading an image from the camera
+    ret, frame = cap.read()
+    #Flip the image
+    frame_flip = cv.flip(frame,1)
+    #Convert the RGB image to a gray image 
+    gray = cv.cvtColor(frame_flip, cv.COLOR_BGR2GRAY)
+    #Apply thresholding to binarize the image pixels
+    ret,thresh = cv.threshold(gray,thresh_num,255,0)
+    #Find all the contours in the image
+    img, contours, hierarchy = cv.findContours(thresh, 1, 2)
+    #Make sure the contour list is empty
+    list_contours = []
+    #Start a loop to iterate over each contour in the contour list
+    for i in range(0,len(contours)):
+        cnt = contours[i]
+        #Find area of the contour
+        area = cv.contourArea(cnt)
+        #Check whether the contour area falls into the range
+        if(area > 1500 and area < 40000):
+            #Add contour to the list
+            list_contours.append(cnt)
+            #Compute or approximate the polygon shape
+            epsilon = 0.001*alpha*cv.arcLength(cnt,True)
+            approx = cv.approxPolyDP(cnt,epsilon,True)
+            #Find moments of the contour and assigned it to a variable M
+            M = cv.moments(cnt)
+            #Find the center of the geometric shape
+            cx = int(M['m10']/M['m00'])
+            cy = int(M['m01']/M['m00'])
+            #Initialize the number of vertices present in the polygon approximation
+            number_of_vertices = int(len(approx))
+            #Input the number of verices into the dictionary
+            if number_of_vertices in polygon_shape:
+                #Draw contour boundry
+                cv.drawContours(frame_flip, list_contours, -1, (0,255,0), 8)
+                #Print the polygon name
+                cv.putText(frame_flip, polygon_shape[len(approx)], (cx + 60,cy), 
+                            cv.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,255), 2, cv.LINE_AA)
+    #Show original image off of camera
+    cv.imshow('Camera_Input', cv.flip(frame,1))
+    #Show gray image
+    cv.imshow('Gray_Scale', gray)
+    #Show image after thresholding
+    cv.imshow('Threshold',thresh)
+    #Show the final output       
+    cv.imshow('Output', frame_flip)
+    #Define exit condition
+    if cv.waitKey(1) == ord('q'):
+        break
+#Release video stream input  
+cap.release()
+#Exit all open windows
+cv.destroyAllWindows()

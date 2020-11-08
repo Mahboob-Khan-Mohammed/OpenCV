@@ -1,4 +1,4 @@
-# OpenCV
+# OpenCV_Contours
 This repository contains all my OpenCV projects. All the published code and material in this repository are meant for learning purposes only.
 
 # Contours

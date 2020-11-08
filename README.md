@@ -6,3 +6,5 @@ Contours in OpenCV is a powerful method to compute all kinds of shapes in a give
 
 # Polygon_Identification
 Identifying the shape of the polygon from a video stream. Working with static images is one thing and working on a series of images from a video stream is another. In this project, I write a code that takes input from a camera, identifies the polygon shape, and displays it on the screen.
+
+Click on the link to check out the working of this project: https://youtu.be/WzybObUGeMw
